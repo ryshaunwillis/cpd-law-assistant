@@ -1,12 +1,18 @@
+import cors from 'cors';
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-
 const ask = require("./ask");
-
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:4200',
+    // 'https://YOUR-FRONTEND.onrender.com'
+  ]
+}));
+
 app.use(express.json());
 
 app.get("/health", (req,res)=>{
@@ -38,8 +44,7 @@ app.post("/api/ask", async (req, res) => {
   }
 });
 
-const PORT = 4242;
-
-app.listen(PORT, ()=>{
-  console.log(`API running on port ${PORT}`);
+const port = process.env.PORT || 4242;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
