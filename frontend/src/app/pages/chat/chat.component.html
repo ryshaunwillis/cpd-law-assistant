@@ -1,0 +1,63 @@
+<div class="page">
+  <header class="topbar">
+    <div class="title">CPD / ILCS Q&A</div>
+    <div class="subtitle">Answers grounded in retrieved directives + statutes (quotes + sources).</div>
+  </header>
+
+  <main class="layout">
+    <section class="chat">
+      <div class="thread">
+        <div
+          class="msg"
+          *ngFor="let m of messages"
+          [class.user]="m.role === 'user'"
+          [class.assistant]="m.role === 'assistant'"
+        >
+          <div class="bubble">
+            <div class="role">{{ m.role === 'user' ? 'You' : 'Assistant' }}</div>
+            <div class="text" [innerText]="m.text"></div>
+          </div>
+        </div>
+
+        <div class="msg assistant" *ngIf="loading">
+          <div class="bubble">
+            <div class="role">Assistant</div>
+            <div class="text">Thinking…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="composer">
+        <textarea
+          [(ngModel)]="question"
+          (keydown)="onEnter($event)"
+          placeholder="Ask: “Am I allowed to have dreadlocks in CPD?”"
+          rows="3"
+        ></textarea>
+
+        <button (click)="send()" [disabled]="loading || !question.trim()">Ask</button>
+      </div>
+
+      <div class="error" *ngIf="error">{{ error }}</div>
+    </section>
+
+    <aside class="sources">
+      <div class="panelTitle">Sources (last answer)</div>
+
+      <div class="empty" *ngIf="!lastSources.length">
+        No sources yet. Ask a question to see cited excerpts here.
+      </div>
+
+      <div class="sourceCard" *ngFor="let s of lastSources">
+        <div class="badge">{{ s.source }}</div>
+        <div class="sourceTitle">{{ s.title }}</div>
+        <a class="sourceLink" [href]="s.url" target="_blank" rel="noreferrer">{{ s.url }}</a>
+        <div class="snippet">{{ shortText(s.text) }}</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    Not legal advice and not official CPD guidance. Always verify in the linked source documents.
+  </footer>
+</div>
