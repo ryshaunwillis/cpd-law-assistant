@@ -6,6 +6,13 @@ export default async function handler(req, res) {
   }
 
   try {
+    const mod = await import('../backend/src/ask.js');
+    const ask = mod.ask;
+
+    if (typeof ask !== 'function') {
+      throw new Error('ask export not found from ../backend/src/ask.js');
+    }
+
     const { question } = req.body || {};
 
     if (!question) {
@@ -13,14 +20,12 @@ export default async function handler(req, res) {
     }
 
     const result = await ask(question);
-
     return res.status(200).json(result);
   } catch (err) {
-    console.error(err);
-
+    console.error('Vercel /api/ask crash:', err);
     return res.status(500).json({
       error: 'Server error',
-      details: err?.message || String(err)
+      details: err?.message || String(err),
     });
   }
 }
