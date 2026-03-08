@@ -14,6 +14,8 @@ app.get("/health", (req,res)=>{
 });
 
 app.post("/api/ask", async (req, res) => {
+  const started = Date.now();
+
   try {
     const { question } = req.body;
 
@@ -22,12 +24,13 @@ app.post("/api/ask", async (req, res) => {
     }
 
     const result = await ask(question);
+
+    console.log("TOTAL /api/ask ms:", Date.now() - started);
     res.json(result);
   } catch (err) {
-    // Print full error in terminal
     console.error("API ERROR:", err?.response?.data || err);
+    console.log("FAILED /api/ask ms:", Date.now() - started);
 
-    // Return useful error to the frontend
     res.status(500).json({
       error: "Server error",
       details: err?.response?.data || err?.message || String(err),

@@ -1,6 +1,7 @@
 const axios = require("axios");
 const searchChunks = require("./search");
 
+
 async function embed(text) {
   const r = await axios.post(
     "https://api.openai.com/v1/embeddings",
@@ -22,10 +23,10 @@ async function embed(text) {
 
 function buildContext(sources) {
   return sources
-    .map(
-      (s, i) =>
-        `[#${i + 1}] ${s.source} | ${s.title}\nURL: ${s.url}\n${s.text}`
-    )
+    .map((s, i) => {
+      const trimmed = (s.text || "").slice(0, 1200);
+      return `[#${i + 1}] ${s.source} | ${s.title}\nURL: ${s.url}\n${trimmed}`;
+    })
     .join("\n\n---\n\n");
 }
 
@@ -69,8 +70,14 @@ async function generateAnswer(question, sources) {
 }
 
 async function ask(question) {
+  const t0 = Date.now();
+
   const embedding = await embed(question);
+  console.log("embed ms:", Date.now() - t0);
+
+  const t1 = Date.now();
   const results = await searchChunks(embedding, question);
+  console.log("search ms:", Date.now() - t1);
 
   if (!hasUsableResults(results)) {
     return {
@@ -79,7 +86,9 @@ async function ask(question) {
     };
   }
 
+  const t2 = Date.now();
   const answer = await generateAnswer(question, results);
+  console.log("generate ms:", Date.now() - t2);
 
   return {
     answer,
