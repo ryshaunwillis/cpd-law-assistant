@@ -1,10 +1,12 @@
-import cors from 'cors';
 
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const ask = require("./ask");
 const app = express();
+const chargeAnalysisRoutes = require('./routes/chargeAnalysis');
+const chatRoutes = require('./routes/chat');
+
 
 app.use(cors({
   origin: [
@@ -43,6 +45,14 @@ app.post("/api/ask", async (req, res) => {
     });
   }
 });
+
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true });
+});
+app.use('/api/charges', chargeAnalysisRoutes);
+
+
+app.use('/api/chat', chatRoutes);
 
 const port = process.env.PORT || 4242;
 app.listen(port, () => {

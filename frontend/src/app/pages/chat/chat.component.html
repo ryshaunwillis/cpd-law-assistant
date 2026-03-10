@@ -1,7 +1,9 @@
 <div class="page">
   <header class="topbar">
-    <div class="title">CPD / ILCS Q&A</div>
-    <div class="subtitle">Answers grounded in retrieved directives + statutes (quotes + sources).</div>
+    <div class="title">CPD / ILCS Assistant</div>
+    <div class="subtitle">
+      Ask legal or policy questions, or describe an incident for possible charge analysis.
+    </div>
   </header>
 
   <main class="layout">
@@ -14,7 +16,10 @@
           [class.assistant]="m.role === 'assistant'"
         >
           <div class="bubble">
-            <div class="role">{{ m.role === 'user' ? 'You' : 'Assistant' }}</div>
+            <div class="role">
+              {{ m.role === 'user' ? 'You' : 'Assistant' }}
+              <span *ngIf="m.role === 'assistant' && m.intent">• {{ m.intent }}</span>
+            </div>
             <div class="text" [innerText]="m.text"></div>
           </div>
         </div>
@@ -25,39 +30,180 @@
             <div class="text">Thinking…</div>
           </div>
         </div>
+
+        <div class="msg assistant" *ngIf="showChargeForm">
+  <div class="bubble chargeFormBubble">
+    <div class="role">Assistant • Charge Intake</div>
+
+    <div class="chargeFormCard">
+      <div class="chargeGrid">
+        <div class="field">
+          <label>Incident</label>
+          <input [(ngModel)]="chargeForm.incidentType" placeholder="Battery, robbery..." />
+        </div>
+
+        <div class="field">
+          <label>Victim</label>
+          <input [(ngModel)]="chargeForm.victimType" placeholder="Adult, child, officer..." />
+        </div>
+
+        <div class="field">
+          <label>Injury</label>
+          <input [(ngModel)]="chargeForm.injury" placeholder="Bleeding, stitches..." />
+        </div>
+
+        <div class="field">
+          <label>Weapon</label>
+          <input [(ngModel)]="chargeForm.weapon" placeholder="None, gun, knife..." />
+        </div>
+
+        <div class="field">
+          <label>Property</label>
+          <input [(ngModel)]="chargeForm.propertyTaken" placeholder="Phone, wallet, car..." />
+        </div>
+
+        <div class="field">
+          <label>Entry</label>
+          <input [(ngModel)]="chargeForm.forcedEntry" placeholder="Forced entry? yes/no" />
+        </div>
+
+        <div class="field">
+          <label>Relationship</label>
+          <input [(ngModel)]="chargeForm.relationship" placeholder="Stranger, spouse..." />
+        </div>
+
+        <div class="field">
+          <label>Location</label>
+          <input [(ngModel)]="chargeForm.location" placeholder="Street, home, store..." />
+        </div>
+
+        <div class="field full">
+          <label>Conduct</label>
+          <textarea
+            [(ngModel)]="chargeForm.offenderConduct"
+            rows="2"
+            placeholder="What did the offender do?"
+          ></textarea>
+        </div>
+
+        <div class="field full">
+          <label>Threats / Police / Notes</label>
+          <textarea
+            [(ngModel)]="chargeForm.narrativeNotes"
+            rows="2"
+            placeholder="Threats, police involvement, anything else important"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="chargeFormActions">
+        <button type="button" (click)="submitChargeForm()">Analyze Charges</button>
+        <button type="button" class="secondaryBtn" (click)="cancelChargeForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
       </div>
 
       <div class="composer">
+        <div class="composerInner">
         <textarea
           [(ngModel)]="question"
           (keydown)="onEnter($event)"
-          placeholder="Ask: “Am I allowed to have dreadlocks in CPD?”"
-          rows="3"
+          placeholder="Ask a legal question or describe an incident..."
+          rows="4"
         ></textarea>
 
-        <button (click)="send()" [disabled]="loading || !question.trim()">Ask</button>
+        <button (click)="send()" [disabled]="loading || !question.trim()">
+          Send
+        </button>
+        </div>
       </div>
 
       <div class="error" *ngIf="error">{{ error }}</div>
     </section>
 
     <aside class="sources">
-      <div class="panelTitle">Sources (last answer)</div>
+  <div class="panelTitle">
+    <ng-container [ngSwitch]="lastIntent">
+      <span *ngSwitchCase="'charges'">Charge Analysis</span>
+      <span *ngSwitchCase="'hybrid'">Charge Analysis + Sources</span>
+      <span *ngSwitchDefault>Sources</span>
+    </ng-container>
+  </div>
 
-      <div class="empty" *ngIf="!lastSources.length">
-        No sources yet. Ask a question to see cited excerpts here.
+  <div class="sourceCard" *ngIf="lastChargeAnalysis?.likelyCharges?.length">
+    <div class="badge">Likely Charges</div>
+    <div
+      class="chargeCard"
+      *ngFor="let c of lastChargeAnalysis?.likelyCharges; trackBy: trackCharge"
+    >
+      <div class="sourceTitle">{{ c.citation }} — {{ c.sectionTitle }}</div>
+      <div class="snippet" *ngIf="c.whyItFits?.length">
+        Why it fits: {{ c.whyItFits?.join(' | ') }}
       </div>
+      <div class="snippet" *ngIf="c.missingFacts?.length">
+        Missing facts: {{ c.missingFacts?.join(' | ') }}
+      </div>
+    </div>
+  </div>
 
-      <div class="sourceCard" *ngFor="let s of lastSources">
-        <div class="badge">{{ s.source }}</div>
-        <div class="sourceTitle">{{ s.title }}</div>
-        <a class="sourceLink" [href]="s.url" target="_blank" rel="noreferrer">{{ s.url }}</a>
-        <div class="snippet">{{ shortText(s.text) }}</div>
+  <div class="sourceCard" *ngIf="lastChargeAnalysis?.possibleCharges?.length">
+    <div class="badge">Possible Charges</div>
+    <div
+      class="chargeCard"
+      *ngFor="let c of lastChargeAnalysis?.possibleCharges; trackBy: trackCharge"
+    >
+      <div class="sourceTitle">{{ c.citation }} — {{ c.sectionTitle }}</div>
+      <div class="snippet" *ngIf="c.whyItFits?.length">
+        Why it fits: {{ c.whyItFits?.join(' | ') }}
       </div>
-    </aside>
+      <div class="snippet" *ngIf="c.missingFacts?.length">
+        Missing facts: {{ c.missingFacts?.join(' | ') }}
+      </div>
+    </div>
+  </div>
+
+  <div class="sourceCard" *ngIf="lastChargeAnalysis?.possibleEnhancedCharges?.length">
+    <div class="badge">Possible Enhanced Charges</div>
+    <div
+      class="chargeCard"
+      *ngFor="let c of lastChargeAnalysis?.possibleEnhancedCharges; trackBy: trackCharge"
+    >
+      <div class="sourceTitle">{{ c.citation }} — {{ c.sectionTitle }}</div>
+      <div class="snippet" *ngIf="c.whyItFits?.length">
+        Why it fits: {{ c.whyItFits?.join(' | ') }}
+      </div>
+      <div class="snippet" *ngIf="c.missingFacts?.length">
+        Missing facts: {{ c.missingFacts?.join(' | ') }}
+      </div>
+    </div>
+  </div>
+
+  <div class="sourceCard" *ngIf="lastChargeAnalysis?.globalMissingFacts?.length">
+    <div class="badge">Important Missing Facts</div>
+    <div class="snippet" *ngFor="let fact of lastChargeAnalysis?.globalMissingFacts">
+      • {{ fact }}
+    </div>
+  </div>
+
+  <div class="sourceCard" *ngIf="lastSources.length">
+    <div class="badge">Sources</div>
+    <div class="linkedSource" *ngFor="let s of lastSources">
+      <div class="sourceTitle">{{ s.title }}</div>
+      <a class="sourceLink" [href]="s.url" target="_blank" rel="noreferrer">
+        {{ s.url }}
+      </a>
+      <div class="snippet">{{ shortText(s.text) }}</div>
+    </div>
+  </div>
+
+  <div
+    class="empty"
+    *ngIf="!lastSources.length && !lastChargeAnalysis"
+  >
+    Ask a question or describe an incident to see results here.
+  </div>
+</aside>
   </main>
-
-  <footer class="footer">
-    Not legal advice and not official CPD guidance. Always verify in the linked source documents.
-  </footer>
 </div>

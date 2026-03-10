@@ -169,6 +169,323 @@
   }
 }
 
+
+.chargeFormBubble {
+  width: min(720px, 100%);
+}
+
+.chargeFormCard {
+  margin-top: 8px;
+}
+
+.chargeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.chargeFormActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.secondaryBtn {
+  opacity: 0.85;
+}
+
+@media (max-width: 700px) {
+  .chargeGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================
+   MOBILE / RESPONSIVE CHAT
+========================= */
+
+.page {
+  min-height: 100dvh;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+.chat,
+.sources {
+  min-width: 0;
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100dvh - 220px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.msg {
+  display: flex;
+}
+
+.msg.user {
+  justify-content: flex-end;
+}
+
+.msg.assistant {
+  justify-content: flex-start;
+}
+
+.bubble {
+  width: fit-content;
+  max-width: min(820px, 92%);
+  padding: 12px 14px;
+  border-radius: 16px;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.role {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+.text {
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+.composer {
+  margin-top: 12px;
+}
+
+.composerInner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.composer textarea {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  resize: none;
+  padding: 12px 14px;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+.composer button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+}
+
+.sources {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+}
+
+.sourceCard,
+.chargeCard,
+.linkedSource {
+  min-width: 0;
+}
+
+.sourceTitle,
+.snippet,
+.sourceLink {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.chargeFormBubble {
+  width: min(100%, 820px);
+}
+
+.chargeFormCard {
+  margin-top: 8px;
+}
+
+.chargeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.chargeFormActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.secondaryBtn {
+  opacity: 0.9;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sources {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .thread {
+    max-height: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .page {
+    padding: 10px;
+  }
+
+  .topbar {
+    margin-bottom: 10px;
+  }
+
+  .title {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .layout {
+    gap: 12px;
+  }
+
+  .bubble {
+    max-width: 100%;
+    padding: 11px 12px;
+    border-radius: 14px;
+  }
+
+  .thread {
+    gap: 10px;
+    padding-right: 0;
+  }
+
+  .composerInner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .composer textarea {
+    min-height: 110px;
+  }
+
+  .composer button {
+    width: 100%;
+  }
+
+  .chargeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .panelTitle {
+    font-size: 14px;
+  }
+
+  .sourceCard,
+  .chargeCard,
+  .linkedSource {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 400px) {
+  .title {
+    font-size: 18px;
+  }
+
+  .bubble {
+    padding: 10px 11px;
+  }
+
+  .composer textarea {
+    min-height: 96px;
+  }
+}
+
 .error {
   padding: 10px 12px;
   color: #ffb4b4;
