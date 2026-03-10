@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBase: 'https://cpd-law-assistant-api.onrender.com'
+  apiBase: 'https://cpd-law-assistant-backend.onrender.com'
 };
