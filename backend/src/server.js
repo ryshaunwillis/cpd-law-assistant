@@ -8,11 +8,22 @@ const chargeAnalysisRoutes = require('./routes/chargeAnalysis');
 const chatRoutes = require('./routes/chat');
 
 
+const allowedOrigins = [
+  'http://localhost:4200',
+  'https://cpd-law-assistant-frontend.onrender.com',
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:4200',
-    // 'https://YOUR-FRONTEND.onrender.com'
-  ]
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: false,
 }));
 
 app.use(express.json());
