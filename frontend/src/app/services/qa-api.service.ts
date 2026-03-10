@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../../backend/src/environments/environment';
+import { environment } from '../../environments/environment';
+
 
 export type SourceItem = {
   title: string;

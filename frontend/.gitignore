@@ -43,3 +43,12 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 .env*.local
+
+
+
+ingestion/.venv/
+ingestion/data/
+*.jsonl
+*.env
+backend/.env
+frontend/.env
